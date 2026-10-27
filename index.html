@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d222b"><meta name="description" content="ВНУТРИ · Путь кислорода. Небольшая игра о доставке кислорода: пять платформ, три капсулы и один важный маршрут.">
+  <title>ВНУТРИ · Путь кислорода</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#game">Перейти к игре</a>
+<div class="page">
+  <header class="masthead"><a class="brand" href="./" aria-label="ВНУТРИ — на главную"><span class="brand-mark" aria-hidden="true">◉</span> ВНУТРИ<span class="brand-dot">.</span></a><span class="edition">ИССЛЕДУЙТЕ МАЛОЕ. ПОЙМИТЕ БОЛЬШЕ.</span><a class="code-link" href="https://github.com/DEATIN/human-body-platformer" target="_blank" rel="noopener noreferrer">Код проекта ↗</a></header>
+  <main>
+    <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow"><span></span> УЧЕБНАЯ АРКАДА · МИССИЯ 01</p><h1 id="page-title">Путь <em>кислорода.</em></h1><p class="intro-copy">Маленький зонд. Важная доставка. Помогите Линзе собрать три капсулы O₂ и добраться до работающей мышцы.</p></div><aside class="diary"><span class="diary-icon" aria-hidden="true">↗</span><div><span class="micro-label">ДНЕВНИК НИКИ</span><strong>Подъём на холм</strong><p>Работающей мышце нужно больше кислорода. Проследим путь доставки.</p></div></aside></section>
+    <section class="game-shell" id="game" aria-label="Платформер «Путь кислорода»">
+      <div class="dashboard"><div class="cargo"><span class="micro-label">КАПСУЛЫ O₂</span><div class="cargo-value"><strong id="cargo">0<span> / 3</span></strong><span class="cargo-dots" aria-hidden="true"><i></i><i></i><i></i></span></div></div><div class="stat"><span class="micro-label">СЧЁТ</span><strong id="score">0</strong></div><div class="stat"><span class="micro-label">ВРЕМЯ</span><strong id="timer">00:00</strong></div><div class="stat record"><span class="micro-label">РЕКОРД</span><strong id="record">0</strong></div><div class="game-actions"><button id="sound" class="tool-button" type="button" aria-label="Включить звук" aria-pressed="false" title="Звук выключен">♫<span>Звук</span></button><button id="pause" class="tool-button" type="button" disabled aria-label="Пауза">Ⅱ<span>Пауза</span></button><button id="restart" class="tool-button" type="button" aria-label="Начать заново">↻<span>Заново</span></button></div></div>
+      <div class="stage"><canvas id="world" width="1280" height="600" tabindex="0" aria-label="Игровое поле. Движение: стрелки или A, D. Прыжок: пробел или W. Пауза: P или Escape." aria-describedby="instructions">Для игры нужен браузер с поддержкой Canvas.</canvas><div class="game-overlay" id="overlay"><div class="overlay-card"><span class="overlay-icon" id="overlay-icon" aria-hidden="true">O₂</span><p class="eyebrow" id="overlay-label">МАРШРУТ ГОТОВ</p><h2 id="overlay-title">Доставка начинается<br>с первого прыжка.</h2><p id="overlay-copy">Пять платформ. Три капсулы кислорода. Дойдите до светящегося кольца, избегая опасной зоны внизу.</p><button id="start" class="primary" type="button">Начать маршрут <span aria-hidden="true">→</span></button><p class="overlay-keys" id="overlay-keys"><kbd>←</kbd><kbd>→</kbd> движение <span>·</span> <kbd>Пробел</kbd> прыжок</p></div></div></div>
+      <div class="mission-status"><span class="state-pill" id="state">Готов к старту</span><p id="message" role="status" aria-live="polite">Линза ждёт на первой платформе. Начнём?</p><span class="route-label">ЛЁГКИЕ <span>→</span> МЫШЦА</span></div>
+      <div class="touch-controls" aria-label="Экранное управление"><div><button type="button" data-control="left" aria-label="Двигаться влево">←</button><button type="button" data-control="right" aria-label="Двигаться вправо">→</button></div><span>Удерживайте движение<br>и нажимайте прыжок</span><button type="button" data-control="jump" class="jump-button" aria-label="Прыгнуть">↑ <small>Прыжок</small></button></div>
+    </section>
+    <div class="below-game"><div class="instructions" id="instructions"><span class="micro-label">УПРАВЛЕНИЕ</span><p><kbd>←</kbd><kbd>→</kbd> или <kbd>A</kbd><kbd>D</kbd> — движение <span class="separator">/</span> <kbd>Пробел</kbd> или <kbd>W</kbd> — прыжок <span class="separator">/</span> <kbd>P</kbd> — пауза <span class="separator">/</span> <kbd>R</kbd> — заново</p></div><details class="model-note"><summary>Об этой маленькой модели <span>↗</span></summary><p>Аркада по мотивам концепции «ВНУТРИ». Зонд, платформы и капсулы — условные игровые обозначения. В организме кислород переносится с кровью к тканям. Линза помогает проследить маршрут, а не управляет клетками.</p><p>Соберите все три капсулы перед финишем. На телефоне камера следует за Линзой. При уходе со вкладки игра автоматически встаёт на паузу.</p></details></div>
+    <p id="storage-note" class="storage-note" hidden>Браузер не разрешил сохранить рекорд. Игра продолжает работать, текущий рекорд доступен до закрытия страницы.</p>
+    <noscript><p class="storage-note">Включите JavaScript в браузере, чтобы играть.</p></noscript>
+  </main>
+  <footer><span>ВНУТРИ<span class="brand-dot">.</span> <span class="footer-caption">На большом пути важен каждый маленький шаг.</span></span><span>Практика 03 · Алексей Курносов · OpenAI Codex</span></footer>
+</div>
+</body>
+</html>
