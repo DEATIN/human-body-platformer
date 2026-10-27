@@ -5,7 +5,8 @@ import {GameInput} from './input.js';
 const $=id=>document.getElementById(id);
 const canvas=$('world'), shell=$('game'), model=new GameModel(), renderer=new GameRenderer(canvas);
 const recordKey='vnutri-oxygen-record-v1';
-let best=0, rafId=null, lastTime=null, audio=null, soundEnabled=false;
+let best=0, rafId=null, lastTime=null, visualTime=0, audio=null, soundEnabled=false;
+const motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
 try{const raw=localStorage.getItem(recordKey);const value=Number(raw);if(raw!==null&&Number.isFinite(value)&&value>=0&&value<=1000000)best=Math.floor(value);}catch{$('storage-note').hidden=false;}
 const timeLabel=seconds=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
 const input=new GameInput({canvas,shell,buttons:[...document.querySelectorAll('[data-control]')],isRunning:()=>model.status==='running',onPause:()=>togglePause(),onRestart:()=>restart()});
@@ -23,23 +24,29 @@ function tone(frequency,duration=.09){
   }catch{soundEnabled=false;updateSound();}
 }
 function updateSound(){$('sound').setAttribute('aria-pressed',String(soundEnabled));$('sound').setAttribute('aria-label',soundEnabled?'Выключить звук':'Включить звук');$('sound').title=soundEnabled?'Звук включён':'Звук выключен';}
-function draw(){renderer.render(model,model.elapsed);}
+function draw(){renderer.render(model,visualTime);}
 function stopLoop(){if(rafId!==null)cancelAnimationFrame(rafId);rafId=null;lastTime=null;}
-function schedule(){if(rafId===null&&model.status==='running')rafId=requestAnimationFrame(frame);}
+// Ambient motion and game physics share one loop, but keep separate clocks.
+function needsFrames(){return !document.hidden&&model.status!=='paused'&&(model.status==='running'||!motionPreference.matches);}
+function schedule(){if(rafId===null&&needsFrames())rafId=requestAnimationFrame(frame);}
 function frame(timestamp){
-  rafId=null;if(model.status!=='running')return;
+  rafId=null;if(!needsFrames()){lastTime=null;return;}
   const dt=lastTime===null?0:Math.min(Math.max(0,(timestamp-lastTime)/1000),.05);lastTime=timestamp;
-  const previousCount=model.collectedCount;
-  if(dt>0)model.update(dt,input.read());
-  if(model.collectedCount>previousCount)tone(520+model.collectedCount*110);
-  if(model.status==='won'||model.status==='lost'){
-    input.clear();lastTime=null;saveRecord();tone(model.status==='won'?880:180,.22);sync(true);draw();return;
+  if(!motionPreference.matches)visualTime+=dt;
+  if(model.status==='running'){
+    const previousCount=model.collectedCount;
+    if(dt>0)model.update(dt,input.read());
+    if(model.collectedCount>previousCount)tone(520+model.collectedCount*110);
+    if(model.status==='won'||model.status==='lost'){
+      input.clear();saveRecord();tone(model.status==='won'?880:180,.22);sync(true);
+    }else sync(false);
   }
-  sync(false);draw();schedule();
+  draw();schedule();
 }
 function saveRecord(){if(model.score<=best)return;best=model.score;try{localStorage.setItem(recordKey,String(best));}catch{$('storage-note').hidden=false;}}
 function setText(id,value){const element=$(id);if(element.textContent!==String(value))element.textContent=String(value);}
 function sync(overlayChanged=true){
+  shell.dataset.state=model.status;
   if($('cargo').dataset.count!==String(model.collectedCount)){$('cargo').innerHTML=`${model.collectedCount}<span> / 3</span>`;$('cargo').dataset.count=String(model.collectedCount);}
   document.querySelectorAll('.cargo-dots i').forEach((dot,i)=>dot.classList.toggle('filled',i<model.collectedCount));
   setText('score',model.score);setText('timer',timeLabel(model.elapsed));setText('record',best);
@@ -74,8 +81,11 @@ $('start').addEventListener('click',activate);
 $('restart').addEventListener('click',restart);
 $('pause').addEventListener('click',togglePause);
 $('sound').addEventListener('click',()=>{soundEnabled=!soundEnabled;updateSound();if(soundEnabled)tone(660);canvas.focus({preventScroll:true});});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();stopLoop();input.clear();}else{lastTime=null;draw();schedule();}});
 window.addEventListener('blur',()=>{input.clear();pause();});
 window.addEventListener('resize',draw);
-window.addEventListener('pagehide',()=>{pause();input.clear();});
-sync();draw();
+window.addEventListener('pagehide',()=>{pause();stopLoop();input.clear();});
+window.addEventListener('pageshow',()=>{lastTime=null;draw();schedule();});
+motionPreference.addEventListener('change',()=>{stopLoop();draw();schedule();});
+sync();draw();schedule();
+
